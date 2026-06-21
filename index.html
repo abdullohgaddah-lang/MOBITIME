@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f7f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Telefon Hisob">
+  <title>Telefon Hisob</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script>
+    (function () {
+      try {
+        const s = JSON.parse(localStorage.getItem("kirim-chiqim-settings") || "{}");
+        const theme = s.theme || "light";
+        if (theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#111110");
+        }
+      } catch (_) {}
+    })();
+  </script>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div class="brand-text">
+<br>
+<svg width="680" viewBox="0 0 680 180" xmlns="http://www.w3.org/2000/svg">
+  <line x1="140" y1="52" x2="540" y2="52" stroke="#c9a84c" stroke-width="0.8" opacity="0.7"/>
+  <text x="340" y="112"
+    font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+    font-size="64"
+    font-weight="300"
+    fill="#c9a84c"
+    text-anchor="middle"
+    letter-spacing="16">MOBITIME</text>
+  <text x="340" y="138"
+    font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+    font-size="12"
+    font-weight="400"
+    fill="#c9a84c"
+    text-anchor="middle"
+    letter-spacing="5">TELEFON VA EHTIYOT QISMLAR</text>
+  <line x1="140" y1="155" x2="540" y2="155" stroke="#c9a84c" stroke-width="0.8" opacity="0.7"/>
+</svg>
+
+      </div>
+      <hr>
+    </header>
+
+    <div class="view active" id="view-home">
+      <div class="install-banner" id="install-banner" hidden>
+        <p class="install-banner-text">Ilovani bosh ekranga qo'shing</p>
+        <button type="button" class="banner-install-btn" id="banner-install">Qo'shish</button>
+        <button type="button" class="banner-close-btn" id="banner-dismiss" aria-label="Yopish">&times;</button>
+      </div>
+
+      <section class="balance-card">
+        <p class="balance-label">Sof foyda</p>
+        <p class="balance-amount" id="balance">0 so'm</p>
+        <div class="summary">
+          <div class="summary-item income">
+            <span class="summary-label">Sotuv</span>
+            <span class="summary-value" id="total-income">0</span>
+          </div>
+          <div class="summary-item expense">
+            <span class="summary-label">Xarid</span>
+            <span class="summary-value" id="total-expense">0</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card budget-card" id="budget-card" hidden>
+        <div class="budget-header">
+          <span class="budget-title">Oylik xarid limiti</span>
+          <span class="budget-text" id="budget-text"></span>
+        </div>
+        <div class="budget-track"><div class="budget-fill" id="budget-fill"></div></div>
+        <p class="budget-remaining" id="budget-remaining"></p>
+      </section>
+
+      <section class="quick-stats" id="quick-stats"></section>
+
+      <section class="card form-section">
+        <div class="form-header">
+          <h2 id="form-title">Yangi yozuv</h2>
+          <button type="button" class="text-btn" id="cancel-edit" hidden>Bekor</button>
+        </div>
+
+        <div class="type-toggle">
+          <button type="button" class="type-btn active" data-type="income">Sotuv</button>
+          <button type="button" class="type-btn" data-type="expense">Xarid</button>
+        </div>
+
+        <form id="transaction-form">
+          <div class="field">
+            <label for="amount">Summa</label>
+            <input type="number" id="amount" inputmode="numeric" min="1" placeholder="850 000" required>
+          </div>
+          <div class="field">
+            <label for="category">Tur</label>
+            <select id="category" required></select>
+          </div>
+          <div class="field">
+            <label for="date">Sana</label>
+            <input type="date" id="date" required>
+          </div>
+          <div class="field">
+            <label for="note">Model / izoh</label>
+            <input type="text" id="note" placeholder="iPhone 13 ekran, Samsung A54..." maxlength="100">
+          </div>
+          <button type="submit" class="submit-btn" id="submit-btn">Sotuv qo'shish</button>
+        </form>
+      </section>
+    </div>
+
+    <div class="view" id="view-stats">
+      <section class="card stats-section">
+        <div class="stats-header">
+          <h2>Tahlil</h2>
+          <select id="stats-period" class="period-select">
+            <option value="month">Bu oy</option>
+            <option value="3months">3 oy</option>
+            <option value="all">Hammasi</option>
+          </select>
+        </div>
+
+        <div class="insight-grid" id="insight-grid"></div>
+
+        <div class="chart-block">
+          <h3 class="chart-title">Sotuv va xarid</h3>
+          <div class="monthly-chart" id="monthly-chart"></div>
+          <div class="chart-legend">
+            <span class="legend-item"><i class="dot income"></i> Sotuv</span>
+            <span class="legend-item"><i class="dot expense"></i> Xarid</span>
+          </div>
+        </div>
+
+        <div class="chart-block">
+          <h3 class="chart-title">Xaridlar</h3>
+          <div class="category-chart" id="expense-chart"></div>
+        </div>
+
+        <div class="chart-block">
+          <h3 class="chart-title">Sotuvlar</h3>
+          <div class="category-chart" id="income-chart"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="view" id="view-history">
+      <section class="card history-section">
+        <div class="history-header">
+          <h2>Jurnal</h2>
+          <button type="button" class="clear-btn" id="clear-all" hidden>Tozalash</button>
+        </div>
+
+        <div class="field search-field">
+          <input type="search" id="search-input" placeholder="Model yoki tur bo'yicha qidirish..." autocomplete="off">
+        </div>
+
+        <div class="filters">
+          <select id="filter-type" class="filter-select">
+            <option value="all">Hammasi</option>
+            <option value="income">Sotuv</option>
+            <option value="expense">Xarid</option>
+          </select>
+          <select id="filter-category" class="filter-select">
+            <option value="all">Barcha turlar</option>
+          </select>
+        </div>
+
+        <ul class="transaction-list" id="transaction-list">
+          <li class="empty-state">Hozircha yozuv yo'q</li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="view" id="view-settings">
+      <section class="card">
+        <h2 class="section-title">Ko'rinish</h2>
+        <div class="setting-row">
+          <label for="theme-select">Mavzu</label>
+          <select id="theme-select" class="setting-select">
+            <option value="light">Yorug'</option>
+            <option value="dark">Qorong'u</option>
+            <option value="auto">Avtomatik</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">Xarid limiti</h2>
+        <p class="setting-desc">Oyiga qancha xarid qilish mumkin</p>
+        <div class="field">
+          <label for="budget-input">Limit (so'm)</label>
+          <input type="number" id="budget-input" inputmode="numeric" min="0" placeholder="5 000 000">
+        </div>
+        <button type="button" class="submit-btn income" id="save-budget">Saqlash</button>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">Ma'lumotlar</h2>
+        <div class="setting-actions">
+          <button type="button" class="action-btn" id="export-btn">Eksport</button>
+          <button type="button" class="action-btn" id="import-btn">Import</button>
+          <input type="file" id="import-file" accept=".json,application/json" hidden>
+        </div>
+      </section>
+
+      <section class="card" id="install-section">
+        <h2 class="section-title">Bosh ekranga qo'shish</h2>
+        <p class="setting-desc" id="install-desc">Ilovani telefon ekraniga o'rnating.</p>
+        <button type="button" class="submit-btn income" id="install-btn" hidden>O'rnatish</button>
+        <ol class="install-steps" id="ios-install-steps" hidden>
+          <li>Safari brauzerida oching</li>
+          <li><strong>Ulashish</strong> tugmasini bosing</li>
+          <li><strong>Bosh ekranga qo'shish</strong> ni tanlang</li>
+        </ol>
+        <p class="installed-badge" id="installed-msg" hidden>O'rnatilgan</p>
+      </section>
+
+      <section class="card about-card">
+        <h2 class="section-title">Haqida</h2>
+        <p class="setting-desc">Telefon va ehtiyot qismlar do'koni uchun sodda hisob kitob. Ma'lumotlar faqat shu qurilmada saqlanadi.</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <nav class="bottom-nav">
+    <button type="button" class="nav-btn active" data-view="home">
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9.5Z"/></svg>
+      <span>Asosiy</span>
+    </button>
+    <button type="button" class="nav-btn" data-view="stats">
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19V9m7 10V5m7 14v-7"/></svg>
+      <span>Tahlil</span>
+    </button>
+    <button type="button" class="nav-btn" data-view="history">
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>
+      <span>Jurnal</span>
+    </button>
+    <button type="button" class="nav-btn" data-view="settings">
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <span>Sozlama</span>
+    </button>
+ 
+ 
+  <div class="bottom-nav-inner">
+    
+    <button class="nav-btn" onclick="location.href='ombor.html'">Ombor</button>
+  </div>
+
+
+</nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
